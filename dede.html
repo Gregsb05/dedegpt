@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DÉDÉ GPT</title> 
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .btn-animate:hover {
+            transform: scale(1.05);
+            transition: transform 0.2s ease-in-out;
+        }
+        #prompt:focus {
+            outline: none;
+            ring: 2px solid #6366f1;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col items-center justify-center">
+    <div class="container mx-auto px-4 max-w-2xl">
+        <!-- Header -->
+        <h1 class="text-4xl font-bold text-center text-indigo-400 mb-8">Salut Mon Pote !</h1>
+
+        <!-- Input et Bouton -->
+        <div class="flex flex-col sm:flex-row gap-4 mb-6">
+            <input 
+                type="text" 
+                id="prompt" 
+                placeholder="Tape ton prompt ici..." 
+                class="w-full sm:w-3/4 px-4 py-3 rounded-lg shadow-sm border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500"
+            >
+            <button 
+                onclick="sendPrompt()" 
+                class="btn-animate bg-indigo-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-indigo-700 transition-colors duration-200"
+            >
+                Exécuter
+            </button>
+        </div>
+
+        <!-- Résultat -->
+        <div id="result" class="bg-gray-800 p-6 rounded-lg shadow-md text-gray-200 whitespace-pre-wrap min-h-[150px]">
+            <!-- Les résultats s'afficheront ici -->
+        </div>
+    </div>
+
+    <script>
+        async function sendPrompt() {
+            const prompt = document.getElementById("prompt").value;
+            const resultDiv = document.getElementById("result");
+            resultDiv.textContent = "Chargement...";
+
+            try {
+                const res = await fetch("http://127.0.0.1:5000/exec", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ prompt })
+                });
+                const data = await res.json();
+                resultDiv.textContent = data.output || "Aucune réponse reçue.";
+            } catch (error) {
+                resultDiv.textContent = "Erreur : " + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
